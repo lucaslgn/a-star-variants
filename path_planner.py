@@ -45,19 +45,41 @@ class PathPlanner(object):
 
         return reversed_path[::-1]  # This syntax creates the reverse list
 
-    def example(self, start_position, goal_position):
+    def a_star(self, start_position, goal_position):
         """
-        Example method.
+        Plans a path using A*.
 
-        :param start_position: position where the planning starts as a tuple (x, y).
+        :param start_position: position where the planning stars as a tuple (x, y).
         :type start_position: tuple.
         :param goal_position: goal position of the planning as a tuple (x, y).
         :type goal_position: tuple.
         :return: the path as a sequence of positions and the path cost.
         :rtype: list of tuples and float.
         """
-        path = []
-        f_path = 0
+        pq = []
+
+        start = self.node_grid.get_node(start_position[0], start_position[1])
+        goal = self.node_grid.get_node(goal_position[0], goal_position[1])
+
+        start.g = 0
+        start.f = start.distance_to(goal.i, goal.j)
+
+        heapq.heappush(pq, (start.f, start))
+
+        while len(pq) > 0:
+            f, node = heapq.heappop(pq)
+            if node == goal:
+                path, f_path = self.construct_path(node), f
+                break
+            node.closed = True
+            node_tuple = (node.i, node.j)
+            for successor_tuple in self.node_grid.get_successors(node.i, node.j):
+                successor = self.node_grid.get_node(successor_tuple[0], successor_tuple[1])
+                if not successor.closed and successor.f > node.g + self.node_grid.cost_map.get_edge_cost(node_tuple, successor_tuple) + successor.distance_to(goal.i, goal.j):
+                    successor.g = node.g + self.node_grid.cost_map.get_edge_cost(node_tuple, successor_tuple)
+                    successor.f = successor.g + successor.distance_to(goal.i, goal.j)
+                    successor.parent = node
+                    heapq.heappush(pq, (successor.f, successor))
 
         self.node_grid.reset()
         return path, f_path

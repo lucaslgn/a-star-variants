@@ -7,7 +7,7 @@ import random
 import time
 
 # Select planning algorithm
-algorithm = 'example'
+algorithm = 'a_star'
 
 # Number of path plannings used in the Monte Carlo analysis
 #num_iterations = 1
@@ -102,9 +102,8 @@ for i in range(num_iterations):
             continue
         problem_valid = True
     tic = time.time()
-    if algorithm == 'example':
-        #path, cost = path_planner.example(start_position, goal_position)
-        continue
+    if algorithm == 'a_star':
+        path, cost = path_planner.a_star(start_position, goal_position)
     else:
         raise Exception("No implemented algorithm provided.")
     # if path is not None and len(path) > 0:
