@@ -127,3 +127,41 @@ class PathPlanner(object):
 
         self.node_grid.reset()
         return path, f_path
+
+    def dynamic_weighted_a_star(self, start_position, goal_position):
+        pq = []
+        epsilon = 1.5
+        start = self.node_grid.get_node(start_position[0], start_position[1])
+        goal = self.node_grid.get_node(goal_position[0], goal_position[1])
+
+        start.g = 0
+        start.f = start.distance_to(goal.i, goal.j)
+
+        heapq.heappush(pq, (start.f, start))
+        N = 1000 # upper bound for depth
+        d = 1 # search depth
+
+        while len(pq) > 0:
+            f, node = heapq.heappop(pq)
+            if node == goal:
+                path, f_path = self.construct_path(node), f
+                break
+            node.closed = True
+            node_tuple = (node.i, node.j)
+            for successor_tuple in self.node_grid.get_successors(node.i, node.j):
+                successor = self.node_grid.get_node(successor_tuple[0], successor_tuple[1])
+                h = self.node_grid.cost_map.get_edge_cost(node_tuple,
+                                                          successor_tuple) + successor.distance_to(goal.i, goal.j)
+
+                w = 1 + epsilon - (d * (epsilon) / N) # Dynamic weighting
+
+                if not successor.closed and successor.f > node.g + w * h:
+                    successor.parent = node
+                    successor.g = node.g + self.node_grid.cost_map.get_edge_cost(node_tuple, successor_tuple)
+                    successor.f = successor.g + w * successor.distance_to(goal.i, goal.j)
+                    heapq.heappush(pq, (successor.f, successor))
+
+            d += 1
+
+        self.node_grid.reset()
+        return path, f_path
