@@ -7,7 +7,9 @@ import random
 import time
 
 # Select planning algorithm
-algorithm = 'a_star'
+#algorithm = 'a_star'
+#algorithm = 'weighted_a_star'
+algorithm = 'dynamic_weighted_a_star'
 
 # Number of path plannings used in the Monte Carlo analysis
 #num_iterations = 1
@@ -104,6 +106,10 @@ for i in range(num_iterations):
     tic = time.time()
     if algorithm == 'a_star':
         path, cost = path_planner.a_star(start_position, goal_position)
+    elif algorithm == 'weighted_a_star':
+        path, cost = path_planner.weighted_a_star(start_position, goal_position)
+    elif algorithm == 'dynamic_weighted_a_star':
+            path, cost = path_planner.dynamic_weighted_a_star(start_position, goal_position)
     else:
         raise Exception("No implemented algorithm provided.")
     # if path is not None and len(path) > 0:
@@ -114,6 +120,7 @@ for i in range(num_iterations):
     plot_path(cost_map, start_position, goal_position, path, '%s_%d' % (algorithm, i), save_fig, show_fig, fig_format)
 
 
+print(r'Algorithm: {0}'.format(algorithm))
 # Print Monte Carlo statistics
 print(r'Compute time: mean: {0}, std: {1}'.format(np.mean(times), np.std(times)))
 if not (inf in costs):
