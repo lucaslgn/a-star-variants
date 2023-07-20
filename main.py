@@ -7,9 +7,10 @@ import random
 import time
 
 # Select planning algorithm
-#algorithm = 'a_star'
+algorithm = 'a_star'
 #algorithm = 'weighted_a_star'
-algorithm = 'dynamic_weighted_a_star'
+#algorithm = 'dynamic_weighted_a_star_pxwd'
+#algorithm = 'dynamic_weighted_a_star_pxwu'
 
 # Number of path plannings used in the Monte Carlo analysis
 #num_iterations = 1
@@ -18,7 +19,7 @@ num_iterations = 100  # Monte Carlo
 
 # Plot options
 save_fig = False  # if the figure will be used to the hard disk
-show_fig = True  # if the figure will be shown in the screen
+show_fig = False  # if the figure will be shown in the screen
 fig_format = 'eps'
 # Recommended figure formats: .eps for Latex/Linux, .svg for MS Office, and .png for easy visualization in Windows.
 # The quality of .eps and .svg is far superior since these are vector graphics formats.
@@ -108,8 +109,10 @@ for i in range(num_iterations):
         path, cost = path_planner.a_star(start_position, goal_position)
     elif algorithm == 'weighted_a_star':
         path, cost = path_planner.weighted_a_star(start_position, goal_position)
-    elif algorithm == 'dynamic_weighted_a_star':
-            path, cost = path_planner.dynamic_weighted_a_star(start_position, goal_position)
+    elif algorithm == 'dynamic_weighted_a_star_pxwd':
+        path, cost = path_planner.dynamic_weighted_a_star_pxwd(start_position, goal_position)
+    elif algorithm == 'dynamic_weighted_a_star_pxwu':
+        path, cost = path_planner.dynamic_weighted_a_star_pxwu(start_position, goal_position)
     else:
         raise Exception("No implemented algorithm provided.")
     # if path is not None and len(path) > 0:

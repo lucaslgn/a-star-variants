@@ -127,7 +127,18 @@ class PathPlanner(object):
         self.node_grid.reset()
         return path, f_path
 
-    def dynamic_weighted_a_star(self, start_position, goal_position):
+    def dynamic_weighted_a_star_pxwd(self, start_position, goal_position):
+        """
+        Plans a path using Dynamic Weighted A* (DWA*), and the approach of pxWD.
+        :param start_position: position where the planning stars as a tuple (x, y).
+        :type start_position: tuple.
+        :param goal_position: goal position of the planning as a tuple (x, y).
+        :type goal_position: tuple.
+        :return: the path as a sequence of positions and the path cost.
+        :rtype: list of tuples and float.
+        :hyper-param w: value of weight
+        :type: float
+        """
         pq = []
         w = 1.5
         start = self.node_grid.get_node(start_position[0], start_position[1])
@@ -158,3 +169,47 @@ class PathPlanner(object):
                     heapq.heappush(pq, (successor.f, successor))
         self.node_grid.reset()
         return path, f_path
+
+    def dynamic_weighted_a_star_pxwu(self, start_position, goal_position):
+        """
+        Plans a path using Dynamic Weighted A* (DWA*), and the approach of pxWU.
+        :param start_position: position where the planning stars as a tuple (x, y).
+        :type start_position: tuple.
+        :param goal_position: goal position of the planning as a tuple (x, y).
+        :type goal_position: tuple.
+        :return: the path as a sequence of positions and the path cost.
+        :rtype: list of tuples and float.
+        :hyper-param w: value of weight
+        :type: float
+        """
+        pq = []
+        w = 1.5
+        start = self.node_grid.get_node(start_position[0], start_position[1])
+        goal = self.node_grid.get_node(goal_position[0], goal_position[1])
+
+        start.g = 0
+        start.f = start.distance_to(goal.i, goal.j)
+
+        heapq.heappush(pq, (start.f, start))
+
+        while len(pq) > 0:
+            f, node = heapq.heappop(pq)
+            if node == goal:
+                path, f_path = self.construct_path(node), f
+                break
+            node.closed = True
+            node_tuple = (node.i, node.j)
+            for successor_tuple in self.node_grid.get_successors(node.i, node.j):
+                successor = self.node_grid.get_node(successor_tuple[0], successor_tuple[1])
+                h = successor.distance_to(goal.i, goal.j)
+                new_g = node.g + self.node_grid.cost_map.get_edge_cost(node_tuple, successor_tuple)
+                f = new_g / (2*w - 1) + h if new_g < (2*w - 1) * h else (new_g + h) / w
+
+                if not successor.closed and successor.f > f:
+                    successor.parent = node
+                    successor.g = new_g
+                    successor.f = f
+                    heapq.heappush(pq, (successor.f, successor))
+        self.node_grid.reset()
+        return path, f_path
+
