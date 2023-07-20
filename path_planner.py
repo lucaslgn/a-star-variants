@@ -93,12 +93,12 @@ class PathPlanner(object):
         :type goal_position: tuple.
         :return: the path as a sequence of positions and the path cost.
         :rtype: list of tuples and float.
-        :hyper-param epsilon: value of weight
+        :hyper-param w: value of weight
         :type: float
         """
 
         pq = []
-        epsilon = 2.5
+        w = 2.5
         start = self.node_grid.get_node(start_position[0], start_position[1])
         goal = self.node_grid.get_node(goal_position[0], goal_position[1])
 
@@ -116,13 +116,12 @@ class PathPlanner(object):
             node_tuple = (node.i, node.j)
             for successor_tuple in self.node_grid.get_successors(node.i, node.j):
                 successor = self.node_grid.get_node(successor_tuple[0], successor_tuple[1])
-                h = self.node_grid.cost_map.get_edge_cost(node_tuple,
-                                                          successor_tuple) + successor.distance_to(goal.i, goal.j)
+                h = self.node_grid.cost_map.get_edge_cost(node_tuple, successor_tuple) + successor.distance_to(goal.i, goal.j)
 
-                if not successor.closed and successor.f > node.g + epsilon * h:
+                if not successor.closed and successor.f > node.g + w * h:
                     successor.parent = node
                     successor.g = node.g + self.node_grid.cost_map.get_edge_cost(node_tuple, successor_tuple)
-                    successor.f = successor.g + epsilon * successor.distance_to(goal.i, goal.j)
+                    successor.f = successor.g + w * successor.distance_to(goal.i, goal.j)
                     heapq.heappush(pq, (successor.f, successor))
 
         self.node_grid.reset()
