@@ -50,16 +50,12 @@ def plot_path(cost_map, start, goal, path, filename, save_fig=True, show_fig=Tru
 
     plt.xlabel('x / j')
     plt.ylabel('y / i')
-    if 'dijkstra' in filename:
-        plt.title('Dijkstra')
-    elif 'greedy' in filename:
-        plt.title('Greedy Best-First')
-    elif 'dynamic_weighted_a_star' in filename:
-        plt.title('Dynamic Weighted A*')
+    if 'a_star' in filename:
+        plt.title('A*')
     elif 'weighted_a_star' in filename:
         plt.title('Weighted A*')
     else:
-        plt.title('A*')
+        plt.title('Dynamic Weighted A*')
 
     if save_fig:
         plt.savefig('%s.%s' % (filename, fig_format), format=fig_format)
